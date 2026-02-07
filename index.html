@@ -51,8 +51,8 @@
       log.textContent = entry + log.textContent;
     };
 
-        // Why we have addEventListener ... that because websockets are event driven not request driven 
-        // you don't check for the messages the browser pushes events into your code
+    // Why we have addEventListener ... that because websockets are event driven not request driven
+    // you don't check for the messages the browser pushes events into your code
     socket.addEventListener("open", () => {
       statusEl.textContent = "CONNECTED : ws://localhost:8080";
       statusEl.className = "status-on";
@@ -60,7 +60,7 @@
     });
 
     // WebSocket closed
-    // once close the server is dead and can never be reopen again ... you must create a new websocket again 
+    // once close the server is dead and can never be reopen again ... you must create a new websocket again
 
     socket.addEventListener("close", () => {
       statusEl.textContent = "DISCONNECTED";
@@ -68,10 +68,21 @@
       appendLog("[SYSTEM]", "Tunnel Collapsed");
     });
 
-    // this evenr is fired every time the server to the client but client doesn't ask for the messages 
-    // server decide when messages arrived 
-    socket.addEventListener('message', (e)=>{
-        appendLog('[RECIEVED]', e.data);
-    })
+    // this event is fired every time the server to the client but client doesn't ask for the messages
+    // server decide when messages arrived
+    socket.addEventListener("message", (e) => {
+      appendLog("[RECIEVED]", e.data);
+    });
+
+    document.getElementById("message-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (socket.readyState != WebSocket.OPEN) {
+        appendLog("[ERROR]", "No active Tunnel Found");
+      }
+      const msg = input.value.trim();
+      socket.send(msg);
+      appendLog("[SEND]", msg);
+      input.value = " ";
+    });
   </script>
 </html>
